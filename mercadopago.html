@@ -51,7 +51,7 @@ setTimeout(() => {
   }
 
   // Troca valor principal e Pix somente se price existir
-  const valorNumber = price ? parseFloat(price.replace(/[^\d,.-]/g, '').replace(',', '.')) : null;
+  const valorNumber = price;
 
   const valorElements = document.querySelectorAll('div.styles_pixPaymentInformativeCardContainer__nC2T3 span.andes-typography');
   if (valorElements.length >= 1) {
