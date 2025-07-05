@@ -26,53 +26,7 @@ setTimeout(() => {
 
 <script>
 (function(){
-  // Sua chave Pix fixa aqui
-  const chaveFixa = "joao@gmail.com"; // <<< SUBSTITUA POR SUA CHAVE PIX REAL
-
-
-  // Função gerar Pix Copia e Cola
-  function gerarPixCopiaECola(chave, valor) {
-    function formatTag(tag, value) {
-      const length = value.length.toString().padStart(2, '0');
-      return `${tag}${length}${value}`;
-    }
-
-    function calcularCRC16(payload) {
-      let polinomio = 0x1021;
-      let resultado = 0xFFFF;
-
-      for (let i = 0; i < payload.length; i++) {
-        resultado ^= payload.charCodeAt(i) << 8;
-        for (let j = 0; j < 8; j++) {
-          if ((resultado & 0x8000) !== 0) {
-            resultado = (resultado << 1) ^ polinomio;
-          } else {
-            resultado <<= 1;
-          }
-          resultado &= 0xFFFF;
-        }
-      }
-
-      return resultado.toString(16).toUpperCase().padStart(4, '0');
-    }
-
-    const payload = [
-      formatTag('00', '01'), // Payload Format Indicator
-      formatTag('26', formatTag('00', 'BR.GOV.BCB.PIX') + formatTag('01', chave)), // Merchant Account Info
-      formatTag('52', '0000'), // Merchant Category Code
-      formatTag('53', '986'),  // Currency (986 = BRL)
-      formatTag('54', valor.toFixed(2)), // Valor
-      formatTag('58', 'BR'), // País
-      formatTag('59', 'N'),   // Nome do recebedor
-      formatTag('60', 'C'),   // Cidade
-      formatTag('62', formatTag('05', '***')) // Info adicional
-    ].join('');
-
-    const semCRC = payload + '6304';
-    const crc = calcularCRC16(semCRC);
-
-    return semCRC + crc;
-  }
+  
 
   // Troca Informações de Contato (email)
   const emailElements = document.querySelectorAll('div.styles_paymentDetails__YOfE6 p.andes-typography');
@@ -133,7 +87,7 @@ setTimeout(() => {
     }
 
     if (imgQR) {
-      imgQR.src = `https://api.qrserver.com/v1/create-qr-code/?size=158x158&data=${encodeURIComponent(copiaecola)}`;
+      imgQR.src = qrCodeBase64;
     }
   } else {
     if (inputPix) {
