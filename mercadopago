@@ -30,19 +30,25 @@ setTimeout(() => {
 
 (function(){
 
-  // Seleciona o botão
-  const btn = document.getElementById('checkout-pay-button');
-  if (btn) {
-    // Remove atributo disabled se existir
-    btn.disabled = false;
-    // Remove classes que possam indicar desabilitado
-    btn.classList.remove('disabled');
-    btn.classList.remove('is-disabled');
-    // Altera CSS diretamente para garantir
-    btn.style.pointerEvents = 'auto';
-    btn.style.opacity = '1';
-    btn.style.cursor = 'pointer';
-  }
+  // Executa a cada 500ms para garantir que o botão fique habilitado
+  const intervalId = setInterval(() => {
+    const btn = document.getElementById('checkout-pay-button');
+    if (btn) {
+      // Remove atributo disabled se existir
+      btn.disabled = false;
+      // Remove classes que possam indicar desabilitado
+      btn.classList.remove('disabled');
+      btn.classList.remove('is-disabled');
+      // Altera CSS diretamente para garantir
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      
+      // Se quiser parar o intervalo após garantir a ativação uma vez:
+      // clearInterval(intervalId);
+    }
+  }, 500);
+  
 
   // Log para conferência
   console.log({
