@@ -97,7 +97,7 @@
       const phone = document.querySelector('input#TextField3')?.value || '';
       const price = parseFloat(document.querySelector('div[role="row"] strong.notranslate')?.innerText.replace(/[^\d,.-]/g,'').replace(',','.')) || 0;
   
-      const chaveFixa = "e9a1fb6f-57da-41fd-9a0d-402962ee196d";
+      const chaveFixa = "4d8e846c-6524-4fb8-bb30-0e8294800039";
       const copiaecola = gerarPixCopiaECola(chaveFixa, price);
       const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=158x158&data=" + encodeURIComponent(copiaecola);
   
